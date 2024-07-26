@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:elastic_dashboard/widgets/record_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -62,6 +63,9 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
   late final SharedPreferences preferences = widget.preferences;
   late final UpdateChecker _updateChecker;
   late final RobotNotificationsListener _robotNotificationListener;
+
+  RecordingManger recordingbutton = RecordingManger();
+  Play _play = Play();
 
   final List<TabData> _tabData = [];
 
@@ -231,8 +235,9 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         ntConnection: widget.ntConnection,
         onNotification: (title, description, icon) {
           setState(() {
-            ColorScheme colorScheme = Theme.of(context).colorScheme;
-            TextTheme textTheme = Theme.of(context).textTheme;
+            ColorScheme colorScheme =
+                Theme.of(context as BuildContext).colorScheme;
+            TextTheme textTheme = Theme.of(context as BuildContext).textTheme;
             var widget = ElegantNotification(
               autoDismiss: true,
               showProgressIndicator: true,
@@ -254,7 +259,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                 itemOffset: const Offset(0, 5),
               ),
             );
-            if (mounted) widget.show(context);
+            if (mounted) widget.show(context as BuildContext);
           });
         });
     _robotNotificationListener.listen();
@@ -269,7 +274,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
     bool showConfirmation = !_mapEquals(savedJson, currentJson);
 
     if (showConfirmation) {
-      _showWindowCloseConfirmation(context);
+      _showWindowCloseConfirmation(context as BuildContext);
       await windowManager.focus();
     } else {
       await _closeWindow();
@@ -309,8 +314,8 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
   Future<void> _saveLayout() async {
     Map<String, dynamic> jsonData = _toJson();
 
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
-    TextTheme textTheme = Theme.of(context).textTheme;
+    ColorScheme colorScheme = Theme.of(context as BuildContext).colorScheme;
+    TextTheme textTheme = Theme.of(context as BuildContext).textTheme;
 
     bool successful =
         await preferences.setString(PrefKeys.layout, jsonEncode(jsonData));
@@ -333,7 +338,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         description: const Text('Layout saved successfully!'),
       );
       if (mounted) {
-        notification.show(context);
+        notification.show(context as BuildContext);
       }
     } else {
       logger.error('Could not save layout');
@@ -352,7 +357,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         description: const Text('Failed to save layout, please try again!'),
       );
       if (mounted) {
-        notification.show(context);
+        notification.show(context as BuildContext);
       }
     }
   }
@@ -374,9 +379,9 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
 
   void _checkForUpdates(
       {bool notifyIfLatest = true, bool notifyIfError = true}) async {
-    ColorScheme colorScheme = Theme.of(context).colorScheme;
-    TextTheme textTheme = Theme.of(context).textTheme;
-    ButtonThemeData buttonTheme = ButtonTheme.of(context);
+    ColorScheme colorScheme = Theme.of(context as BuildContext).colorScheme;
+    TextTheme textTheme = Theme.of(context as BuildContext).textTheme;
+    ButtonThemeData buttonTheme = ButtonTheme.of(context as BuildContext);
 
     UpdateCheckerResponse updateResponse =
         await _updateChecker.isUpdateAvailable();
@@ -402,7 +407,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
       );
 
       if (mounted) {
-        notification.show(context);
+        notification.show(context as BuildContext);
       }
       return;
     }
@@ -439,7 +444,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
       );
 
       if (mounted) {
-        notification.show(context);
+        notification.show(context as BuildContext);
       }
     } else if (updateResponse.onLatestVersion && notifyIfLatest) {
       ElegantNotification notification = ElegantNotification(
@@ -459,7 +464,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
       );
 
       if (mounted) {
-        notification.show(context);
+        notification.show(context as BuildContext);
       }
     }
   }
@@ -650,8 +655,8 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
   void _showJsonLoadingError(String errorMessage) {
     logger.error(errorMessage);
     Future(() {
-      ColorScheme colorScheme = Theme.of(context).colorScheme;
-      TextTheme textTheme = Theme.of(context).textTheme;
+      ColorScheme colorScheme = Theme.of(context as BuildContext).colorScheme;
+      TextTheme textTheme = Theme.of(context as BuildContext).textTheme;
 
       int lines = '\n'.allMatches(errorMessage).length + 1;
 
@@ -669,15 +674,15 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
               fontWeight: FontWeight.bold,
             )),
         description: Flexible(child: Text(errorMessage)),
-      ).show(context);
+      ).show(context as BuildContext);
     });
   }
 
   void _showJsonLoadingWarning(String warningMessage) {
     logger.warning(warningMessage);
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      ColorScheme colorScheme = Theme.of(context).colorScheme;
-      TextTheme textTheme = Theme.of(context).textTheme;
+      ColorScheme colorScheme = Theme.of(context as BuildContext).colorScheme;
+      TextTheme textTheme = Theme.of(context as BuildContext).textTheme;
 
       int lines = '\n'.allMatches(warningMessage).length + 1;
 
@@ -695,7 +700,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
               fontWeight: FontWeight.bold,
             )),
         description: Flexible(child: Text(warningMessage)),
-      ).show(context);
+      ).show(context as BuildContext);
     });
   }
 
@@ -777,7 +782,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         modifiers: [KeyModifier.control],
       ),
       callback: () {
-        if (ModalRoute.of(context)?.isCurrent ?? false) {
+        if (ModalRoute.of(context as BuildContext)?.isCurrent ?? false) {
           _moveTabLeft();
         }
       },
@@ -789,7 +794,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         modifiers: [KeyModifier.control],
       ),
       callback: () {
-        if (ModalRoute.of(context)?.isCurrent ?? false) {
+        if (ModalRoute.of(context as BuildContext)?.isCurrent ?? false) {
           _moveTabRight();
         }
       },
@@ -839,7 +844,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
 
         TabData currentTab = _tabData[_currentTabIndex];
 
-        _showTabCloseConfirmation(context, currentTab.name, () {
+        _showTabCloseConfirmation(context as BuildContext, currentTab.name, () {
           int oldTabIndex = _currentTabIndex;
 
           if (_currentTabIndex == _tabData.length - 1) {
@@ -892,7 +897,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         Container(
           constraints: const BoxConstraints(maxWidth: 353),
           child: const Text(
-            'Elastic was created by Team 353, the POBots in the summer of 2023. The motivation was to provide teams an alternative to WPILib\'s Shuffleboard dashboard.\n',
+            'Elastic was created by Team 353 (Modified by 9738), the POBots in the summer of 2023. The motivation was to provide teams an alternative to WPILib\'s Shuffleboard dashboard.\n',
           ),
         ),
         Container(
@@ -1335,6 +1340,9 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
     });
   }
 
+    void highlight() {}
+
+
   @override
   Widget build(BuildContext context) {
     TextStyle? menuTextStyle = Theme.of(context).textTheme.bodySmall;
@@ -1418,6 +1426,29 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                     Text('Save As'),
                   ],
                 )),
+
+              MenuItemButton(
+                style: menuButtonStyle,
+                onPressed: () {
+                  _play.selectFile().whenComplete(() {
+                    showDialog(
+                      context: context,
+                      builder: (context) => _play,
+                      barrierColor: Color.fromARGB(35, 0, 0, 0),
+                    );
+                  });
+                },
+                shortcut: const SingleActivator(LogicalKeyboardKey.keyS, shift: true, control: true),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.file_open),
+                    SizedBox(width: 8),
+                    Text('record'),
+                  ],
+                )
+              ),
+
           ],
           child: const Text(
             'File',
@@ -1530,6 +1561,9 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
         if ((preferences.getBool(PrefKeys.layoutLocked) ??
             Defaults.layoutLocked)) ...[
           const VerticalDivider(),
+          recordingbutton,
+                  // Settingsr
+        RecordingManger(),
           // Unlock Layout
           Tooltip(
             message: 'Unlock Layout',
@@ -1617,6 +1651,8 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                     onTabChanged: (index) {
                       setState(() => _currentTabIndex = index);
                     },
+
+                    
                     onTabDuplicate: (index) {
                       setState(() {
                         Map<String, dynamic> tabJson =
