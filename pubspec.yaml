@@ -13,6 +13,7 @@ dependencies:
   dot_cast: ^1.2.0
   dropdown_button2: ^2.3.9
   elegant_notification: ^2.2.0
+  file_picker: ^8.0.0+1
   file_selector: ^1.0.1
   flex_seed_scheme: ^2.0.0
   flutter:
@@ -23,6 +24,7 @@ dependencies:
   flutter_fancy_tree_view: ^1.1.1
   flutter_hooks: ^0.20.0
   flutter_launcher_icons: ^0.13.1
+  flutter_xlider: ^3.5.0
   github: ^9.17.0
   http: ^1.2.0
   import_sorter: ^4.6.0
