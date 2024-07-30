@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:elastic_dashboard/services/Record.dart';
+import 'package:elastic_dashboard/services/record.dart';
 
 import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:provider/provider.dart';
-
 
 class RecordingButton extends StatefulWidget {
   void Function()? initState;
@@ -28,10 +26,6 @@ class RecordingButton extends StatefulWidget {
   @override
   State<RecordingButton> createState() => _RecordingButtonState();
 }
-
-
-
-
 
 class _RecordingButtonState extends State<RecordingButton>
     with SingleTickerProviderStateMixin {
@@ -105,10 +99,6 @@ class _RecordingButtonState extends State<RecordingButton>
   }
 }
 
-
-
-
-
 class RecordingManger extends StatelessWidget {
   static List<Record> TopicRecord = [];
   static Stopwatch stopwatch = Stopwatch();
@@ -132,10 +122,9 @@ class RecordingManger extends StatelessWidget {
   void stopRecording() {
     // print(jsonEncode(TopicRecord));
     // print(DateTime.now().toIso8601String().substring(0,19));
-    selectFolder().whenComplete((){
+    selectFolder().whenComplete(() {
       TopicRecord.clear();
     });
-    
   }
 
   static void recordPeriodically(String Topic, String data) {
@@ -153,9 +142,11 @@ class RecordingManger extends StatelessWidget {
         TimeCode(sender: data, time: stopwatch.elapsed.inMilliseconds)
       ]));
     } else {
-      if (rec.gettimecode().last.getTime() != stopwatch.elapsed.inMilliseconds && rec.gettimecode().last.getSender() != data)
-      rec.addTimeCode(
-          TimeCode(sender: data, time: stopwatch.elapsed.inMilliseconds));
+      if (rec.gettimecode().last.getTime() !=
+              stopwatch.elapsed.inMilliseconds &&
+          rec.gettimecode().last.getSender() != data)
+        rec.addTimeCode(
+            TimeCode(sender: data, time: stopwatch.elapsed.inMilliseconds));
     }
   }
 
@@ -163,15 +154,16 @@ class RecordingManger extends StatelessWidget {
     // פתח את בוחר הקבצים
     String? directoryPath = await FilePicker.platform.getDirectoryPath();
 
-      if (directoryPath != null) {
-        // שמור את הקובץ בתיקייה שנבחרה
-        final file = File("$directoryPath/${DateTime.now().toIso8601String().substring(0,19)}.json");
-        final jsonString = jsonEncode(TopicRecord);
-        await file.writeAsString(jsonString);
-        print('File saved to $directoryPath');
-      } else {
-        print('No directory selected');
-      }
+    if (directoryPath != null) {
+      // שמור את הקובץ בתיקייה שנבחרה
+      final file = File(
+          "$directoryPath/${DateTime.now().toIso8601String().substring(0, 19)}.json");
+      final jsonString = jsonEncode(TopicRecord);
+      await file.writeAsString(jsonString);
+      print('File saved to $directoryPath');
+    } else {
+      print('No directory selected');
+    }
     return;
   }
 
@@ -181,22 +173,13 @@ class RecordingManger extends StatelessWidget {
   }
 }
 
-
-
-
-
-
 class Play extends StatelessWidget {
-
   List<Record>? TopicRecord;
-  
 
-   Future<void> selectFile() async {
+  Future<void> selectFile() async {
     // פתח את בוחר הקבצים
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom, 
-      allowedExtensions: ['json']
-    );
+    FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['json']);
 
     if (result != null) {
       // קבל את הקובץ שנבחר
@@ -206,7 +189,8 @@ class Play extends StatelessWidget {
 
       List<dynamic> jsonData = json.decode(jsonString);
       try {
-        TopicRecord = jsonData.map((_record) => Record.fromJson(_record)).toList();
+        TopicRecord =
+            jsonData.map((_record) => Record.fromJson(_record)).toList();
       } catch (e) {
         TopicRecord = null;
         print(e);
@@ -215,7 +199,7 @@ class Play extends StatelessWidget {
     return;
   }
 
-  Widget _Dragging(){
+  Widget _Dragging() {
     return SizedBox(
       width: 300, // קביעת רוחב קבוע
       height: 200, // קביעת גובה קבוע
@@ -246,10 +230,8 @@ class Play extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     return ChangeNotifierProvider(
       create: (context) => TimelineProvider(),
       child: AlertDialog(
@@ -261,14 +243,11 @@ class Play extends StatelessWidget {
             child: Text('Close'),
           ),
         ],
-        content:_Dragging(),
+        content: _Dragging(),
       ),
     );
   }
 }
-
-
-
 
 class TimelineSlider extends StatelessWidget {
   @override
