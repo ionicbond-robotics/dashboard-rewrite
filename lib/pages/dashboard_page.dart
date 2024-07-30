@@ -1340,8 +1340,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
     });
   }
 
-    void highlight() {}
-
+  void highlight() {}
 
   @override
   Widget build(BuildContext context) {
@@ -1427,7 +1426,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                   ],
                 )),
 
-              MenuItemButton(
+            MenuItemButton(
                 style: menuButtonStyle,
                 onPressed: () {
                   _play.selectFile().whenComplete(() {
@@ -1438,7 +1437,8 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                     );
                   });
                 },
-                shortcut: const SingleActivator(LogicalKeyboardKey.keyS, shift: true, control: true),
+                shortcut: const SingleActivator(LogicalKeyboardKey.keyS,
+                    shift: true, control: true),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1446,9 +1446,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                     SizedBox(width: 8),
                     Text('record'),
                   ],
-                )
-              ),
-
+                )),
           ],
           child: const Text(
             'File',
@@ -1475,7 +1473,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                 child: const Text('Clear Layout'),
               ),
               // Lock/Unlock Layout
-              MenuItemButton(
+              MenuItemButton(s
                 style: menuButtonStyle,
                 onPressed: () {
                   if (preferences.getBool(PrefKeys.layoutLocked) ??
@@ -1558,12 +1556,12 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
               : null,
           child: const Text('Add Widget'),
         ),
+        const VerticalDivider(),
+        recordingbutton,
+        // Settingsr
         if ((preferences.getBool(PrefKeys.layoutLocked) ??
             Defaults.layoutLocked)) ...[
           const VerticalDivider(),
-          recordingbutton,
-                  // Settingsr
-        RecordingManger(),
           // Unlock Layout
           Tooltip(
             message: 'Unlock Layout',
@@ -1651,8 +1649,6 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                     onTabChanged: (index) {
                       setState(() => _currentTabIndex = index);
                     },
-
-                    
                     onTabDuplicate: (index) {
                       setState(() {
                         Map<String, dynamic> tabJson =
