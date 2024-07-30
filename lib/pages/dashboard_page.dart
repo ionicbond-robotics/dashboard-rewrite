@@ -1473,7 +1473,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
                 child: const Text('Clear Layout'),
               ),
               // Lock/Unlock Layout
-              MenuItemButton(s
+              MenuItemButton(
                 style: menuButtonStyle,
                 onPressed: () {
                   if (preferences.getBool(PrefKeys.layoutLocked) ??
