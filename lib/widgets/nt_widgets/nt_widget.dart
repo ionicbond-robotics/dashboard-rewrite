@@ -1,3 +1,4 @@
+import 'package:elastic_dashboard/widgets/record_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:collection/collection.dart';
@@ -229,6 +230,9 @@ class NTWidgetModel extends ChangeNotifier {
       }
 
       await Future.delayed(delayTime);
+
+      // print(getCurrentData().toString());
+      RecordingManger.recordPeriodically(_topic, getCurrentData().toString());
     }
   }
 

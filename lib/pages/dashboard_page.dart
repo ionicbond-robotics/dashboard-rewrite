@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:elastic_dashboard/services/nt4_client.dart';
 import 'package:elastic_dashboard/widgets/record_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -66,6 +67,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
 
   RecordingManger recordingbutton = RecordingManger();
   Play _play = Play();
+  List<NT4Topic> topics = [];
 
   final List<TabData> _tabData = [];
 
@@ -86,6 +88,10 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
     windowManager.addListener(this);
     if (!Platform.environment.containsKey('FLUTTER_TEST')) {
       Future(() async => await windowManager.setPreventClose(true));
+    }
+
+    for (NT4Topic topic in widget.ntConnection.announcedTopics().values) {
+      topics.add(topic);
     }
 
     _loadLayout();
@@ -227,6 +233,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
     Future.delayed(const Duration(seconds: 1), () {
       apiListener.initializeSubscriptions();
       apiListener.initializeListeners();
+
     });
 
     Future(() => _checkForUpdates(notifyIfLatest: false, notifyIfError: false));
