@@ -65,9 +65,12 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
   late final UpdateChecker _updateChecker;
   late final RobotNotificationsListener _robotNotificationListener;
 
-  RecordingManger recordingbutton = RecordingManger();
+  RecordingManger? recordingbutton;
   Play _play = Play();
   List<NT4Topic> topics = [];
+
+  _DashboardPageState(){
+  }
 
   final List<TabData> _tabData = [];
 
@@ -82,6 +85,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
 
   @override
   void initState() {
+    recordingbutton = RecordingManger(widget.ntConnection);
     super.initState();
     _updateChecker = UpdateChecker(currentVersion: widget.version);
 
@@ -317,6 +321,10 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
       'tabs': gridData,
     };
   }
+
+  // Record 
+
+
 
   Future<void> _saveLayout() async {
     Map<String, dynamic> jsonData = _toJson();
@@ -1564,7 +1572,7 @@ class _DashboardPageState extends State<DashboardPage> with WindowListener {
           child: const Text('Add Widget'),
         ),
         const VerticalDivider(),
-        recordingbutton,
+        recordingbutton!,
         // Settingsr
         if ((preferences.getBool(PrefKeys.layoutLocked) ??
             Defaults.layoutLocked)) ...[

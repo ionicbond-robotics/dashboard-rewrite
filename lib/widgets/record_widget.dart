@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:elastic_dashboard/services/nt_connection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:elastic_dashboard/services/record.dart';
@@ -113,10 +114,15 @@ class RecordingManger extends StatelessWidget {
   }
 
   RecordingButton? recordingbutton;
+  NTConnection? ntConnection; 
 
-  RecordingManger({super.key}) {
+  RecordingManger(this.ntConnection, {super.key}) {
     recordingbutton = RecordingButton(
-        stopwatch: stopwatch, stopRecording: this.stopRecording);
+        stopwatch: stopwatch, stopRecording: this.stopRecording, startRecording: startRecord,);
+  }
+
+  void startRecord(){
+    recording();
   }
 
   void stopRecording() {
@@ -127,7 +133,7 @@ class RecordingManger extends StatelessWidget {
     });
   }
 
-  static void recordPeriodically(String Topic, String data) {
+  void recordPeriodically(String Topic, String data) {
     if (_isRecording) {
       iterate(Topic, data);
     }
@@ -165,6 +171,25 @@ class RecordingManger extends StatelessWidget {
       print('No directory selected');
     }
     return;
+  }
+
+
+  Future<void> recording () async {
+    while (_isRecording) {
+
+      // dynamic values = ntConnection.getntClient().announcedTopics.values.map((topic) {
+      //   // recordPeriodically (topic.name ,ntConnection.getLastAnnouncedValue(topic.name).toString());
+      //   print("${topic.name }: ${ntConnection.getLastAnnouncedValue(topic.name).toString()}");
+      //   });
+      // // for (var value in values) {
+      // //   print(value);
+      // //   recordPeriodically(value, value);
+      // // }
+
+      await Future.delayed(Duration(seconds: 1));
+
+      
+    }
   }
 
   @override

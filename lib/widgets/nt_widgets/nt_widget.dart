@@ -231,8 +231,6 @@ class NTWidgetModel extends ChangeNotifier {
 
       await Future.delayed(delayTime);
 
-      // print(getCurrentData().toString());
-      RecordingManger.recordPeriodically(_topic, getCurrentData().toString());
     }
   }
 

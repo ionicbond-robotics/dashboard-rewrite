@@ -38,6 +38,10 @@ class NTConnection {
     nt4Connect(ipAddress);
   }
 
+  NT4Client getntClient (){
+    return _ntClient;
+  }
+
   void nt4Connect(String ipAddress) {
     _ntClient = NT4Client(
         serverBaseAddress: ipAddress,
