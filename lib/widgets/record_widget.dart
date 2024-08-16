@@ -39,14 +39,14 @@ class _RecordingButtonState extends State<RecordingButton>
       vsync: this,
       duration: Duration(milliseconds: 500),
     );
-    widget.initState;
+    widget.initState?.call();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-    widget.dispose;
+    widget.dispose?.call();
   }
 
   void _startRecording() {
@@ -56,7 +56,7 @@ class _RecordingButtonState extends State<RecordingButton>
     });
     widget.stopwatch.reset();
     widget.stopwatch.start();
-    widget.startRecording;
+    widget.startRecording?.call();
   }
 
   void _stopRecording() {
@@ -114,11 +114,11 @@ class RecordingManger extends StatelessWidget {
   }
 
   RecordingButton? recordingbutton;
-  NTConnection? ntConnection; 
+  NTConnection ntConnection; 
 
   RecordingManger(this.ntConnection, {super.key}) {
     recordingbutton = RecordingButton(
-        stopwatch: stopwatch, stopRecording: this.stopRecording, startRecording: startRecord,);
+        stopwatch: stopwatch, stopRecording: stopRecording, startRecording: startRecord,);
   }
 
   void startRecord(){
@@ -175,16 +175,36 @@ class RecordingManger extends StatelessWidget {
 
 
   Future<void> recording () async {
+
+    // dynamic values = ntConnection.getntClient().announcedTopics.values.map((topic) => ntConnection.getLastAnnouncedValue(topic.name));
+
+    // for (var value in values) {
+
+    //   print(value);
+      
+    // }
+    
+
     while (_isRecording) {
 
       // dynamic values = ntConnection.getntClient().announcedTopics.values.map((topic) {
       //   // recordPeriodically (topic.name ,ntConnection.getLastAnnouncedValue(topic.name).toString());
-      //   print("${topic.name }: ${ntConnection.getLastAnnouncedValue(topic.name).toString()}");
-      //   });
-      // // for (var value in values) {
-      // //   print(value);
-      // //   recordPeriodically(value, value);
-      // // }
+      //   print(ntConnection.getLastAnnouncedValue(topic.name));
+      //   return ntConnection.getLastAnnouncedValue(topic.name);
+      // });
+
+      dynamic values = ntConnection.getntClient().announcedTopics.values;
+
+      for (var topic in values) {
+
+        // print(value.name);
+        // print(ntConnection.getLastAnnouncedValue(value.name));
+
+        recordPeriodically (topic.name ,ntConnection.getLastAnnouncedValue(topic.name).toString());
+
+      
+      }
+      
 
       await Future.delayed(Duration(seconds: 1));
 
