@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:elastic_dashboard/services/nt_connection.dart';
+import 'package:elastic_dashboard/widgets/draggable_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:elastic_dashboard/services/record.dart';
@@ -175,30 +176,14 @@ class RecordingManger extends StatelessWidget {
 
 
   Future<void> recording () async {
-
-    // dynamic values = ntConnection.getntClient().announcedTopics.values.map((topic) => ntConnection.getLastAnnouncedValue(topic.name));
-
-    // for (var value in values) {
-
-    //   print(value);
-      
-    // }
     
 
     while (_isRecording) {
 
-      // dynamic values = ntConnection.getntClient().announcedTopics.values.map((topic) {
-      //   // recordPeriodically (topic.name ,ntConnection.getLastAnnouncedValue(topic.name).toString());
-      //   print(ntConnection.getLastAnnouncedValue(topic.name));
-      //   return ntConnection.getLastAnnouncedValue(topic.name);
-      // });
 
       dynamic values = ntConnection.getntClient().announcedTopics.values;
 
       for (var topic in values) {
-
-        // print(value.name);
-        // print(ntConnection.getLastAnnouncedValue(value.name));
 
         recordPeriodically (topic.name ,ntConnection.getLastAnnouncedValue(topic.name).toString());
 
@@ -277,20 +262,25 @@ class Play extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TimelineProvider(),
-      child: AlertDialog(
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('Close'),
-          ),
-        ],
-        content: _Dragging(),
-      ),
-    );
+    // return Visibility(
+    //   // maintainInteractivity: true,
+    //   // visible: true,
+    //   child: ChangeNotifierProvider(
+    //     create: (context) => TimelineProvider(),
+    //     child: AlertDialog(
+    //       actions: [
+    //         TextButton(
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //           },
+    //           child: Text('Close'),
+    //         ),
+    //       ],
+    //       content: _Dragging(),
+    //     ),
+    //   )
+    // );
+    return PlayWndos();
   }
 }
 
@@ -337,5 +327,53 @@ class TimelineProvider with ChangeNotifier {
   void setCurrentTime(double time) {
     _currentTime = time;
     notifyListeners();
+  }
+}
+
+class PlayWndos extends StatefulWidget {
+  @override
+  _PlayWndos createState() => _PlayWndos();
+}
+
+class _PlayWndos extends State<PlayWndos> {
+  Offset _offset = Offset(100, 100); // מיקום התחלתי של החלון הצף
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned(
+          left: _offset.dx,
+          top: _offset.dy,
+          child: Draggable(
+            feedback: _buildFloatingWindow(), // מה יופיע במהלך הגרירה
+            childWhenDragging: Container(), // מה יופיע במיקום המקורי בזמן הגרירה
+            onDragEnd: (details) {
+              setState(() {
+                _offset = details.offset;
+              });
+            },
+            child: _buildFloatingWindow(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFloatingWindow() {
+    return Material(
+      elevation: 8.0,
+      child: Container(
+        width: 200,
+        height: 150,
+        color: Colors.blueAccent,
+        child: Center(
+          child: Text(
+            'חלון צף',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+        ),
+      ),
+    );
   }
 }
