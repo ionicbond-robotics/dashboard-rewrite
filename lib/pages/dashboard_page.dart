@@ -30,6 +30,7 @@ import 'package:elastic_dashboard/services/shuffleboard_nt_listener.dart';
 import 'package:elastic_dashboard/services/update_checker.dart';
 import 'package:elastic_dashboard/util/tab_data.dart';
 import 'package:elastic_dashboard/widgets/custom_appbar.dart';
+import 'package:elastic_dashboard/widgets/dialog_widgets/dialog_text_input.dart';
 import 'package:elastic_dashboard/widgets/dialog_widgets/dialog_toggle_switch.dart';
 import 'package:elastic_dashboard/widgets/dialog_widgets/layout_drag_tile.dart';
 import 'package:elastic_dashboard/widgets/draggable_containers/models/widget_container_model.dart';
@@ -1812,6 +1813,8 @@ class _AddWidgetDialog extends StatefulWidget {
 
 class _AddWidgetDialogState extends State<_AddWidgetDialog> {
   bool _hideMetadata = true;
+  String _searchQuery = '';
+
   @override
   Widget build(BuildContext context) {
     return Visibility(
@@ -1849,6 +1852,7 @@ class _AddWidgetDialogState extends State<_AddWidgetDialog> {
                         NetworkTableTree(
                           ntConnection: widget.ntConnection,
                           preferences: widget.preferences,
+                          searchQuery: _searchQuery,
                           listLayoutBuilder: (
                               {required title, required children}) {
                             return widget._grid().createListLayout(
@@ -1906,7 +1910,18 @@ class _AddWidgetDialogState extends State<_AddWidgetDialog> {
                           },
                         );
                       }),
-                      const Spacer(),
+                      Expanded(
+                        child: SizedBox(
+                          height: 40.0,
+                          child: DialogTextInput(
+                            onSubmit: (value) =>
+                                setState(() => _searchQuery = value),
+                            initialText: _searchQuery,
+                            allowEmptySubmission: true,
+                            label: "Search",
+                          ),
+                        ),
+                      ),
                       TextButton(
                         onPressed: () {
                           widget._onClose?.call();
