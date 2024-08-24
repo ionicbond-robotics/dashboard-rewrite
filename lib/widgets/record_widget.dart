@@ -102,27 +102,27 @@ class _RecordingButtonState extends State<RecordingButton>
 }
 
 class RecordingManger extends StatelessWidget {
-  static List<Record> TopicRecord = [];
+  static List<Record> topicRecords = [];
   static Stopwatch stopwatch = Stopwatch();
   static bool _isRecording = false;
 
-  static bool get isRecording {
-    return _isRecording;
-  }
-
-  static void set isRecording(bool value) {
+  static bool get isRecording => _isRecording;
+  static set isRecording(bool value) {
     _isRecording = value;
   }
 
   RecordingButton? recordingbutton;
-  NTConnection ntConnection; 
+  NTConnection ntConnection;
 
   RecordingManger(this.ntConnection, {super.key}) {
     recordingbutton = RecordingButton(
-        stopwatch: stopwatch, stopRecording: stopRecording, startRecording: startRecord,);
+      stopwatch: stopwatch,
+      stopRecording: stopRecording,
+      startRecording: startRecord,
+    );
   }
 
-  void startRecord(){
+  void startRecord() {
     recording();
   }
 
@@ -130,30 +130,31 @@ class RecordingManger extends StatelessWidget {
     // print(jsonEncode(TopicRecord));
     // print(DateTime.now().toIso8601String().substring(0,19));
     selectFolder().whenComplete(() {
-      TopicRecord.clear();
+      topicRecords.clear();
     });
   }
 
-  void recordPeriodically(String Topic, String data) {
+  void recordPeriodically(String topic, String data) {
     if (_isRecording) {
-      iterate(Topic, data);
+      iterate(topic, data);
     }
   }
 
   static void iterate(String topic, String data) {
     Record? rec =
-        TopicRecord.firstWhereOrNull((element) => element.getTopic() == topic);
+        topicRecords.firstWhereOrNull((element) => element.getTopic() == topic);
 
     if (rec == null) {
-      TopicRecord.add(Record(Topic: topic, timecode: [
+      topicRecords.add(Record(Topic: topic, timecode: [
         TimeCode(sender: data, time: stopwatch.elapsed.inMilliseconds)
       ]));
     } else {
       if (rec.gettimecode().last.getTime() !=
               stopwatch.elapsed.inMilliseconds &&
-          rec.gettimecode().last.getSender() != data)
+          rec.gettimecode().last.getSender() != data) {
         rec.addTimeCode(
             TimeCode(sender: data, time: stopwatch.elapsed.inMilliseconds));
+      }
     }
   }
 
@@ -165,7 +166,7 @@ class RecordingManger extends StatelessWidget {
       // שמור את הקובץ בתיקייה שנבחרה
       final file = File(
           "$directoryPath/${DateTime.now().toIso8601String().substring(0, 19)}.json");
-      final jsonString = jsonEncode(TopicRecord);
+      final jsonString = jsonEncode(topicRecords);
       await file.writeAsString(jsonString);
       print('File saved to $directoryPath');
     } else {
@@ -174,26 +175,16 @@ class RecordingManger extends StatelessWidget {
     return;
   }
 
-
-  Future<void> recording () async {
-    
-
+  Future<void> recording() async {
     while (_isRecording) {
-
-
       dynamic values = ntConnection.getntClient().announcedTopics.values;
 
       for (var topic in values) {
-
-        recordPeriodically (topic.name ,ntConnection.getLastAnnouncedValue(topic.name).toString());
-
-      
+        recordPeriodically(topic.name,
+            ntConnection.getLastAnnouncedValue(topic.name).toString());
       }
-      
 
-      await Future.delayed(Duration(seconds: 1));
-
-      
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
@@ -204,7 +195,7 @@ class RecordingManger extends StatelessWidget {
 }
 
 class Play extends StatelessWidget {
-  List<Record>? TopicRecord;
+  List<Record>? topicRecord;
 
   Future<void> selectFile() async {
     // פתח את בוחר הקבצים
@@ -219,10 +210,10 @@ class Play extends StatelessWidget {
 
       List<dynamic> jsonData = json.decode(jsonString);
       try {
-        TopicRecord =
-            jsonData.map((_record) => Record.fromJson(_record)).toList();
+        topicRecord =
+            jsonData.map((record) => Record.fromJson(record)).toList();
       } catch (e) {
-        TopicRecord = null;
+        topicRecord = null;
         print(e);
       }
     }
@@ -280,11 +271,13 @@ class Play extends StatelessWidget {
     //     ),
     //   )
     // );
-    return PlayWndos();
+    return const PlayWindow();
   }
 }
 
 class TimelineSlider extends StatelessWidget {
+  const TimelineSlider({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<TimelineProvider>(
@@ -299,8 +292,8 @@ class TimelineSlider extends StatelessWidget {
               color: Colors.blue,
               elevation: 3,
               child: Container(
-                padding: EdgeInsets.all(5),
-                child: Icon(
+                padding: const EdgeInsets.all(5),
+                child: const Icon(
                   Icons.play_arrow,
                   color: Colors.white,
                   size: 25,
@@ -330,13 +323,15 @@ class TimelineProvider with ChangeNotifier {
   }
 }
 
-class PlayWndos extends StatefulWidget {
+class PlayWindow extends StatefulWidget {
+  const PlayWindow({super.key});
+
   @override
-  _PlayWndos createState() => _PlayWndos();
+  State<PlayWindow> createState() => _PlayWindowState();
 }
 
-class _PlayWndos extends State<PlayWndos> {
-  Offset _offset = Offset(100, 100); // מיקום התחלתי של החלון הצף
+class _PlayWindowState extends State<PlayWindow> {
+  Offset _offset = const Offset(100, 100); // מיקום התחלתי של החלון הצף
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +342,8 @@ class _PlayWndos extends State<PlayWndos> {
           top: _offset.dy,
           child: Draggable(
             feedback: _buildFloatingWindow(), // מה יופיע במהלך הגרירה
-            childWhenDragging: Container(), // מה יופיע במיקום המקורי בזמן הגרירה
+            childWhenDragging:
+                Container(), // מה יופיע במיקום המקורי בזמן הגרירה
             onDragEnd: (details) {
               setState(() {
                 _offset = details.offset;
