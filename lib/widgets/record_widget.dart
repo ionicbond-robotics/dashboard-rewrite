@@ -220,37 +220,6 @@ class Play extends StatelessWidget {
     return;
   }
 
-  Widget _Dragging() {
-    return SizedBox(
-      width: 300, // קביעת רוחב קבוע
-      height: 200, // קביעת גובה קבוע
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.play_circle_outline),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.stop_circle_outlined),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.pause_circle_outline),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          TimelineSlider(),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // return Visibility(
@@ -360,16 +329,58 @@ class _PlayWindowState extends State<PlayWindow> {
     return Material(
       elevation: 8.0,
       child: Container(
-        width: 200,
-        height: 150,
-        color: Colors.blueAccent,
-        child: Center(
-          child: Text(
-            'חלון צף',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+        width: 300,
+        height: 300,
+        color: Colors.transparent,
+        child: Visibility(
+            // maintainInteractivity: true,
+            // visible: true,
+            child: ChangeNotifierProvider(
+          create: (context) => TimelineProvider(),
+          child: AlertDialog(
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+            content: DraggingScreen(),
           ),
-        ),
+        )),
       ),
     );
   }
+}
+
+Widget DraggingScreen() {
+  return SizedBox(
+    width: 800, // קביעת רוחב קבוע
+    height: 800, // קביעת גובה קבוע
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.play_circle_outline),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.stop_circle_outlined),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.pause_circle_outline),
+            ),
+          ],
+        ),
+        SizedBox(height: 20),
+        TimelineSlider(),
+      ],
+    ),
+  );
 }
