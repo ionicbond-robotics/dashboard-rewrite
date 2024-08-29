@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:elastic_dashboard/services/nt_connection.dart';
+import 'package:elastic_dashboard/widgets/dialog_widgets/timeline_view.dart';
 import 'package:elastic_dashboard/widgets/draggable_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -244,54 +245,6 @@ class Play extends StatelessWidget {
   }
 }
 
-class TimelineSlider extends StatelessWidget {
-  const TimelineSlider({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<TimelineProvider>(
-      builder: (context, provider, child) {
-        return FlutterSlider(
-          values: [provider.currentTime],
-          max: provider.timestamps.last,
-          min: provider.timestamps.first,
-          handler: FlutterSliderHandler(
-            child: Material(
-              type: MaterialType.circle,
-              color: Colors.blue,
-              elevation: 3,
-              child: Container(
-                padding: const EdgeInsets.all(5),
-                child: const Icon(
-                  Icons.play_arrow,
-                  color: Colors.white,
-                  size: 25,
-                ),
-              ),
-            ),
-          ),
-          onDragging: (handlerIndex, lowerValue, upperValue) {
-            provider.setCurrentTime(lowerValue as double);
-          },
-        );
-      },
-    );
-  }
-}
-
-class TimelineProvider with ChangeNotifier {
-  double _currentTime = 0;
-  List<double> _timestamps = [0, 1, 2, 3, 4, 5]; // זמנים לדוגמה
-
-  double get currentTime => _currentTime;
-  List<double> get timestamps => _timestamps;
-
-  void setCurrentTime(double time) {
-    _currentTime = time;
-    notifyListeners();
-  }
-}
-
 class PlayWindow extends StatefulWidget {
   const PlayWindow({super.key});
 
@@ -379,7 +332,10 @@ Widget DraggingScreen() {
           ],
         ),
         SizedBox(height: 20),
-        TimelineSlider(),
+        TimelineView(
+          incrementValue: 1 / 60,
+          maxValue: 5,
+        ),
       ],
     ),
   );
