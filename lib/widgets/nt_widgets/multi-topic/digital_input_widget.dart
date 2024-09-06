@@ -48,8 +48,38 @@ class DigitalInputModel extends NTWidgetModel {
     required super.preferences,
     required Map<String, dynamic> jsonData,
   }) : super.fromJson(jsonData: jsonData) {
-    int? trueColorValue = tryCast(jsonData['true_color']);
-    int? falseColorValue = tryCast(jsonData['false_color']);
+    int? trueColorValue =
+        tryCast(jsonData['true_color']) ?? tryCast(jsonData['colorWhenTrue']);
+    int? falseColorValue =
+        tryCast(jsonData['false_color']) ?? tryCast(jsonData['colorWhenFalse']);
+
+    if (trueColorValue == null) {
+      String? hexString = tryCast(jsonData['colorWhenTrue']);
+
+      if (hexString != null) {
+        hexString = hexString.toUpperCase().replaceAll('#', '');
+
+        if (hexString.length == 6) {
+          hexString = 'FF$hexString';
+        }
+
+        trueColorValue = int.tryParse(hexString, radix: 16);
+      }
+    }
+
+    if (falseColorValue == null) {
+      String? hexString = tryCast(jsonData['colorWhenFalse']);
+
+      if (hexString != null) {
+        hexString = hexString.toUpperCase().replaceAll('#', '');
+
+        if (hexString.length == 6) {
+          hexString = 'FF$hexString';
+        }
+
+        falseColorValue = int.tryParse(hexString, radix: 16);
+      }
+    }
 
     _trueColor = Color(trueColorValue ?? Colors.green.value);
     _falseColor = Color(falseColorValue ?? Colors.red.value);
