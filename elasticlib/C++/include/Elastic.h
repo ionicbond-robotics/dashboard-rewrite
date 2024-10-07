@@ -7,19 +7,21 @@
 #include <networktables/StringTopic.h>
 #include <wpi/json.h>
 
-class Elastic {
-public:
-    struct ElasticNotification {
-        enum class NotificationLevel {
+namespace elastic {
+    nt::StringTopic topic = nt::NetworkTableInstance::GetDefault().GetStringTopic("/Elastic/RobotNotifications");
+    nt::StringPublisher publisher = topic.Publish(nt::PubSubOption::SendAll(true), nt::PubSubOption::KeepDuplicates(true));
+
+    struct Notification {
+        enum class Level {
             INFO, WARNING, ERROR
         };
 
-        ElasticNotification(NotificationLevel level, const std::string &title, const std::string &description) 
+        Notification(Level level, const std::string &title, const std::string &description) 
             : level(level), title(title), description(description) {}
 
-        void SetLevel(NotificationLevel level) { this->level = level; }
+        void SetLevel(Level level) { this->level = level; }
 
-        NotificationLevel GetLevel() const { return level; }
+        Level GetLevel() const { return level; }
 
         void SetTitle(const std::string &title) { this->title = title; }
 
@@ -31,28 +33,28 @@ public:
 
         std::string ToJson() const {
             wpi::json jsonData;
-            jsonData["level"] = NotificationLevelToString(level);
+            jsonData["level"] = LevelToString(level);
             jsonData["title"] = title;
             jsonData["description"] = description;
             return jsonData.dump();
         }
 
-        static std::string NotificationLevelToString(NotificationLevel level) {
+        static std::string LevelToString(Level level) {
             switch (level) {
-            case NotificationLevel::INFO: return "INFO";
-            case NotificationLevel::WARNING: return "WARNING";
-            case NotificationLevel::ERROR: return "ERROR";
+            case Level::INFO: return "INFO";
+            case Level::WARNING: return "WARNING";
+            case Level::ERROR: return "ERROR";
             default: return "UNKNOWN";
             }
         }
 
     private:
-        NotificationLevel level;
+        Level level;
         std::string title;
         std::string description;
     };
 
-    static void SendAlert(const ElasticNotification &alert) {
+    void SendAlert(const Notification &alert) {
         try {
             std::string jsonString = alert.ToJson();
             publisher.Set(jsonString);
@@ -60,11 +62,4 @@ public:
             std::cerr << "Error processing JSON: " << e.what() << std::endl;
         }
     }
-
-private:
-    static nt::StringTopic topic;
-    static nt::StringPublisher publisher;
-};
-
-nt::StringTopic Elastic::topic = nt::NetworkTableInstance::GetDefault().GetStringTopic("/Elastic/RobotNotifications");
-nt::StringPublisher Elastic::publisher = Elastic::topic.Publish(nt::PubSubOption::SendAll(true), nt::PubSubOption::KeepDuplicates(true));
+}
