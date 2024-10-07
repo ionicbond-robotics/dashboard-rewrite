@@ -42,6 +42,10 @@ class FieldWidgetModel extends NTWidgetModel {
 
   get robotWidthMeters => _robotWidthMeters;
 
+  get isRedAlliance {
+    return ntConnection.getLastAnnouncedValue(("/FMSInfo/IsRedAlliance"));
+  }
+
   set robotWidthMeters(value) {
     _robotWidthMeters = value;
     refresh();
@@ -92,7 +96,7 @@ class FieldWidgetModel extends NTWidgetModel {
     _widgetSize = value;
   }
 
-  get field => _field;
+  Field get field => _field;
 
   late String _robotTopicName;
   final List<String> _otherObjectTopics = [];
@@ -671,10 +675,15 @@ class FieldWidget extends NTWidget {
             }
           }
         }
-
+        // print(model.isRedAlliance);
         return Stack(
           children: [
-            model.field.fieldImage,
+            Transform(
+              alignment: Alignment.center,
+              transform:
+                  Matrix4.rotationY((model.isRedAlliance ?? false) ? pi : 0),
+              child: model.field.fieldImage,
+            ),
             for (List<Offset> points in trajectoryPoints)
               CustomPaint(
                 painter: TrajectoryPainter(
